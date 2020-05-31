@@ -15,7 +15,7 @@ class Qiita {
     
     //記事リスト
     getArticleList = async () => {
-        const allHtml = await _fetchHtml();
+        const allHtml = await _fetchHtml(this.group_url);
         console.log(allHtml);
         // await this._fetchCheckTop();
         // return getGroupId(this.topPageHtml);
