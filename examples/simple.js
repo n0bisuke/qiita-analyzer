@@ -8,7 +8,8 @@ const community = new Qiita(`https://qiita.com/organizations/${groupname}`);
     const cd = {}; // community data
 
     cd.name = groupname;
-    cd.allData = await community.getAllData();
+    // cd.allData = await community.getAllData(); // All Data
+    cd.list = await community.getData(1,2);
 
-    console.log(cd);
+    console.log(cd, cd.list.length);
 })();

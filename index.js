@@ -26,6 +26,12 @@ class Qiita {
       return this.allData;
     };
 
+    //ページ指定
+    getData = async (startPageId=1, endPageId=1) => {
+      const data = await _fetchAllData(this.group_url, startPageId, endPageId);
+      return data;
+    };
+
     _fetchCheck = async () => {
       if(this.allData.length === 0){
         this.allData = await _fetchAllData(this.group_url);

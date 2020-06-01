@@ -7,19 +7,19 @@ const _structure = require('./_structure.js');
 let allPageData = [];
 let constPageMaxId = '';
 
-module.exports = async (group_url, pageid=39) => {
+module.exports = async (group_url, startPageId=1, endPageId=0) => {
     const browser = await puppeteer.launch({
         // headless: false
-    });    
+    });//puppeteerスタート
+
     while(1){
         // process.stdout.write('.'); //progress
-        console.log(pageid);
-
+        console.log(`Page.${startPageId} Fetch...`);
         const page = await browser.newPage();
-        await page.goto(`${group_url}?page=${pageid}`);
+        await page.goto(`${group_url}?page=${startPageId}`);
         await page.waitFor('.of-ItemLink');
 
-        const {dimensions, pageMaxId} = await page.evaluate(() => {
+        let {dimensions, pageMaxId} = await page.evaluate(() => {
             const result = {};
             const elms = Array.from(document.querySelectorAll('.of-ItemLink'));
 
@@ -42,25 +42,32 @@ module.exports = async (group_url, pageid=39) => {
             return {dimensions: result, pageMaxId: pageMaxId};
         });
 
+        //終着をどこにするか
         if(constPageMaxId === ''){
+            if(endPageId !== 0){
+                pageMaxId = endPageId;               
+            }
             constPageMaxId = pageMaxId;
         }
 
         //dimensions (obj) -> data (arr)
         const pageData = _structure(dimensions);
-        if(pageid < constPageMaxId){
-            if(pageData.length !== 0){
-                allPageData = allPageData.concat(pageData);
-                // console.log('--',allPageData);
-                pageid++;
-            }
-            continue;
+        //pageDataが上手くとれてなかったら再度
+        if(pageData.length !== 0){
+            allPageData = allPageData.concat(pageData);
         }else{
-            await browser.close();
+            continue; //取れてない場合IDを変えず再度ループ
+        }
+
+        startPageId++; //次のページへ
+        if(startPageId <= constPageMaxId){
+            continue;        
+        }else{
             break;
         }
 
     }
 
+    await browser.close(); //puppeteer終了
     return allPageData;
 }
