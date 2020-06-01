@@ -1,11 +1,12 @@
 'use strict';
 
-const _fetchHtml = require('./src/_fetchHtml.js');
+const _fetchAllData = require('./src/_fetchAllData.js');
 
 class Qiita {
     constructor(group_url, date) {
       this.group_url = group_url;
       this.date = date;
+      this.allData = [];
       this.topPageHtml = '';
       this.allPageHtml = '';
       this.allEventsInfo = [];
@@ -15,11 +16,21 @@ class Qiita {
     
     //記事リスト
     getArticleList = async () => {
-        const allHtml = await _fetchHtml(this.group_url);
-        console.log(allHtml);
-        // await this._fetchCheckTop();
-        // return getGroupId(this.topPageHtml);
+      await this._fetchCheck();
+      return this.allData;
     };
+
+    //すべての情報
+    getAllData = async () => {
+      await this._fetchCheck();
+      return this.allData;
+    };
+
+    _fetchCheck = async () => {
+      if(this.allData.length === 0){
+        this.allData = await _fetchAllData(this.group_url);
+      }
+    }
 
 
 }
